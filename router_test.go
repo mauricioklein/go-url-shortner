@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/go-redis/redis"
 	_ "github.com/lib/pq"
 
 	"github.com/mauricioklein/go-url-shortner/store"
@@ -21,7 +22,10 @@ func TestRouter_Homepage(t *testing.T) {
 	}
 	defer closeConn()
 
-	router := NewRouter(linkStore)
+	redisStore, cleanRedis := createRedisStore()
+	defer cleanRedis()
+
+	router := NewRouter(linkStore, redisStore)
 	r, _ := http.NewRequest(http.MethodGet, "/", nil)
 	w := httptest.NewRecorder()
 
@@ -38,7 +42,10 @@ func TestRouter_RegisterURL_WithValidURL(t *testing.T) {
 	}
 	defer closeConn()
 
-	router := NewRouter(linkStore)
+	redisStore, cleanRedis := createRedisStore()
+	defer cleanRedis()
+
+	router := NewRouter(linkStore, redisStore)
 	r := &http.Request{
 		Method: http.MethodPost,
 		URL:    &url.URL{Path: "/"},
@@ -61,7 +68,10 @@ func TestRouter_RegisterURL_WithInvalidURL(t *testing.T) {
 	}
 	defer closeConn()
 
-	router := NewRouter(linkStore)
+	redisStore, cleanRedis := createRedisStore()
+	defer cleanRedis()
+
+	router := NewRouter(linkStore, redisStore)
 	r := &http.Request{
 		Method: http.MethodPost,
 		URL:    &url.URL{Path: "/"},
@@ -83,10 +93,13 @@ func TestRouter_ProxyURLCode(t *testing.T) {
 	}
 	defer closeConn()
 
+	redisStore, cleanRedis := createRedisStore()
+	defer cleanRedis()
+
 	// insert link in database
 	link, _ := linkStore.PersistURL("http://www.google.com")
 
-	router := NewRouter(linkStore)
+	router := NewRouter(linkStore, redisStore)
 	r, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/%s", encode(link.ID)), nil)
 	w := httptest.NewRecorder()
 
@@ -109,4 +122,14 @@ func createLinkStore() (*store.LinkStore, func() error, error) {
 	}
 
 	return store.NewLinkStore(db), db.Close, nil
+}
+
+func createRedisStore() (*store.RedisStore, func() *redis.StatusCmd) {
+	client := redis.NewClient(&redis.Options{
+		Addr:     "redis:6379",
+		Password: "",
+		DB:       0,
+	})
+
+	return store.NewRedisStore(client), client.FlushAll
 }

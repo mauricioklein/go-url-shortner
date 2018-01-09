@@ -15,13 +15,15 @@ import (
 // for the project
 type Router struct {
 	ls *store.LinkStore
+	rs *store.RedisStore
 	mr *mux.Router
 }
 
-func NewRouter(ls *store.LinkStore) *mux.Router {
+func NewRouter(ls *store.LinkStore, rs *store.RedisStore) *mux.Router {
 	mr := mux.NewRouter()
 	router := Router{
 		ls: ls,
+		rs: rs,
 		mr: mr,
 	}
 
@@ -45,7 +47,6 @@ func (router *Router) homepage(w http.ResponseWriter, r *http.Request) {
 func (router *Router) registerURL(w http.ResponseWriter, r *http.Request) {
 	url, err := getUrlFromForm(r)
 	if err != nil {
-		fmt.Printf("Erro: %+v\n", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -82,13 +83,26 @@ func (router *Router) proxyURLCode(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := decode(code)
-	storedLink, err := router.ls.GetByID(id)
+
+	// first check if the link exists in Redis
+	redisLink, err := router.rs.QueryLinkByID(id)
+	if err == nil {
+		http.Redirect(w, r, redisLink, http.StatusMovedPermanently)
+		return
+	}
+
+	// link not found on Redis.
+	// So, let's query the DB
+	dbLink, err := router.ls.GetByID(id)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	http.Redirect(w, r, storedLink.URL, http.StatusMovedPermanently)
+	// store the link on Redis
+	router.rs.StoreLink(dbLink)
+
+	http.Redirect(w, r, dbLink.URL, http.StatusMovedPermanently)
 }
 
 func getUrlFromForm(r *http.Request) (string, error) {
