@@ -9,6 +9,42 @@
 			"revisionTime": "2017-10-02T20:02:53Z"
 		},
 		{
+			"checksumSHA1": "HxAVVeX9gPV15TVb4N0E+Iu01vM=",
+			"path": "github.com/go-redis/redis",
+			"revision": "ce05aa5775d74a7314b83570c15cd8cc66ed1696",
+			"revisionTime": "2018-01-04T12:45:42Z"
+		},
+		{
+			"checksumSHA1": "LAcD74Vmoh0nUN4xH8Z3hJioNW8=",
+			"path": "github.com/go-redis/redis/internal",
+			"revision": "ce05aa5775d74a7314b83570c15cd8cc66ed1696",
+			"revisionTime": "2018-01-04T12:45:42Z"
+		},
+		{
+			"checksumSHA1": "GQZsUVg/+6UpQAYpc4luMvMutSI=",
+			"path": "github.com/go-redis/redis/internal/consistenthash",
+			"revision": "ce05aa5775d74a7314b83570c15cd8cc66ed1696",
+			"revisionTime": "2018-01-04T12:45:42Z"
+		},
+		{
+			"checksumSHA1": "GE9tg94JwCzMbBwn3Q2LaFs5Rx0=",
+			"path": "github.com/go-redis/redis/internal/hashtag",
+			"revision": "ce05aa5775d74a7314b83570c15cd8cc66ed1696",
+			"revisionTime": "2018-01-04T12:45:42Z"
+		},
+		{
+			"checksumSHA1": "AtcctlDri3zLh6U5sDnT4NULEtw=",
+			"path": "github.com/go-redis/redis/internal/pool",
+			"revision": "ce05aa5775d74a7314b83570c15cd8cc66ed1696",
+			"revisionTime": "2018-01-04T12:45:42Z"
+		},
+		{
+			"checksumSHA1": "SAd56lagsSI1iXemdTfWBULFhLM=",
+			"path": "github.com/go-redis/redis/internal/proto",
+			"revision": "ce05aa5775d74a7314b83570c15cd8cc66ed1696",
+			"revisionTime": "2018-01-04T12:45:42Z"
+		},
+		{
 			"checksumSHA1": "g/V4qrXjUGG9B+e3hB+4NAYJ5Gs=",
 			"path": "github.com/gorilla/context",
 			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
