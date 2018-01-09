@@ -31,7 +31,7 @@ func TestRouter_Homepage(t *testing.T) {
 	assert.Contains(t, w.Body.String(), "Welcome to the URL shortner")
 }
 
-func TestRouter_RegisterURL(t *testing.T) {
+func TestRouter_RegisterURL_WithValidURL(t *testing.T) {
 	linkStore, closeConn, err := createLinkStore()
 	if err != nil {
 		t.Error(err)
@@ -52,6 +52,28 @@ func TestRouter_RegisterURL(t *testing.T) {
 
 	assert.Equal(t, w.Code, http.StatusOK)
 	assert.Contains(t, w.Body.String(), "Your url is")
+}
+
+func TestRouter_RegisterURL_WithInvalidURL(t *testing.T) {
+	linkStore, closeConn, err := createLinkStore()
+	if err != nil {
+		t.Error(err)
+	}
+	defer closeConn()
+
+	router := NewRouter(linkStore)
+	r := &http.Request{
+		Method: http.MethodPost,
+		URL:    &url.URL{Path: "/"},
+		Header: http.Header{"Content-Type": []string{"application/x-www-form-urlencode"}},
+		Form:   url.Values{"url": []string{"foobar"}},
+	}
+	w := httptest.NewRecorder()
+
+	r.ParseForm()
+	router.ServeHTTP(w, r)
+
+	assert.Equal(t, w.Code, http.StatusBadRequest)
 }
 
 func TestRouter_ProxyURLCode(t *testing.T) {

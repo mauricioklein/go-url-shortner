@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"net/url"
 
 	"github.com/gorilla/mux"
 	"github.com/mauricioklein/go-url-shortner/store"
@@ -99,6 +100,11 @@ func getUrlFromForm(r *http.Request) (string, error) {
 
 	if len(urls) == 0 {
 		return "", errors.New("no url provided")
+	}
+
+	// check URL validity
+	if _, err := url.ParseRequestURI(urls[0]); err != nil {
+		return "", err
 	}
 
 	return urls[0], nil
