@@ -13,6 +13,7 @@ services:
     entrypoint: /bin/bash
     depends_on:
       - db
+      - redis
   prod:
     build: .
     ports:
@@ -23,9 +24,14 @@ services:
       - DB_DATABASE=dev
     depends_on:
       - db
+      - redis
   db:
     image: postgres
     ports:
       - 5432:5432
     volumes:
       - ./postgres/:/docker-entrypoint-initdb.d/
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
