@@ -11,8 +11,6 @@ services:
       - db
   db:
     image: postgres
-    environment:
-     - POSTGRES_DB=dev
     ports:
       - 5432:5432
     volumes:
