@@ -3,7 +3,9 @@ services:
   app:
     image: golang
     volumes:
-      - .:/go/src/app
+      - .:/go/src/github.com/mauricioklein/go-url-shortner
+    ports:
+      - 8080:8080
     entrypoint: /bin/bash
     depends_on:
       - db
