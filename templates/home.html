@@ -1,14 +1,28 @@
 <body>
     <header>
         <title>URL Shortner</title>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     </header>
 
     <body>
         <h2>Welcome to the URL shortner</h2>
 
-        <form action="/" method="post">
-            URL: <input type="text" name="url"><br/>
+        <form id="mainForm" action="/" method="post">
+            URL: <input id="url" name="url" type="text"><br/>
             <input type="submit" value="Create short URL">
         </form>
     </body>
+
+    <script>
+        $('#mainForm').on('submit', function(e){
+            var url = $('#url').val()
+
+            try {
+                new URL(url)
+            } catch(_) {
+                e.preventDefault()
+            }
+        })
+    </script>
 </body>
