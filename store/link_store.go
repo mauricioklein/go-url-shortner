@@ -19,7 +19,7 @@ func NewLinkStore(db *sql.DB) *LinkStore {
 
 func (ls *LinkStore) GetByID(id int) (*Link, error) {
 	var link Link
-	err := ls.db.QueryRow("SELECT id, url FROM urls WHERE id = $1", id).Scan(&link.ID, &link.URL)
+	err := ls.db.QueryRow("SELECT id, url FROM links WHERE id = $1", id).Scan(&link.ID, &link.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (ls *LinkStore) GetByID(id int) (*Link, error) {
 
 func (ls *LinkStore) GetByURL(url string) (*Link, error) {
 	var link Link
-	err := ls.db.QueryRow("SELECT id, url FROM urls WHERE url = $1", url).Scan(&link.ID, &link.URL)
+	err := ls.db.QueryRow("SELECT id, url FROM links WHERE url = $1", url).Scan(&link.ID, &link.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (ls *LinkStore) GetByURL(url string) (*Link, error) {
 
 func (ls *LinkStore) PersistURL(url string) (*Link, error) {
 	var newID int
-	err := ls.db.QueryRow("INSERT INTO urls (url) VALUES($1) returning id", url).Scan(&newID)
+	err := ls.db.QueryRow("INSERT INTO links (url) VALUES($1) returning id", url).Scan(&newID)
 	if err != nil {
 		return nil, err
 	}

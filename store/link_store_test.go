@@ -21,7 +21,7 @@ func TestLinkStore_GetByID(t *testing.T) {
 
 	// insert registry in database
 	var id int
-	db.QueryRow("INSERT INTO urls (url) values ('http://www.google.com/') returning id").Scan(&id)
+	db.QueryRow("INSERT INTO links (url) values ('http://www.google.com/') returning id").Scan(&id)
 
 	// query the record
 	link, err := ls.GetByID(id)
@@ -41,7 +41,7 @@ func TestLinkStore_GetByURL(t *testing.T) {
 
 	// insert registry in database
 	var id int
-	db.QueryRow("INSERT INTO urls (url) values ('http://www.google.com/') returning id").Scan(&id)
+	db.QueryRow("INSERT INTO links (url) values ('http://www.google.com/') returning id").Scan(&id)
 
 	// query the record
 	link, err := ls.GetByURL("http://www.google.com/")
@@ -66,7 +66,7 @@ func TestLinkStore_PersistURL(t *testing.T) {
 
 	// check if the record was actually persisted
 	var id, url string
-	db.QueryRow("SELECT id, url from urls where id = $1", newLink.ID).Scan(&id, &url)
+	db.QueryRow("SELECT id, url from links where id = $1", newLink.ID).Scan(&id, &url)
 	assert.Equal(t, id, strconv.Itoa(newLink.ID))
 	assert.Equal(t, url, newLink.URL)
 }
@@ -87,5 +87,5 @@ func testDBConnection() (*sql.DB, error) {
 }
 
 func cleanupDB(db *sql.DB) {
-	db.Exec("TRUNCATE TABLE urls")
+	db.Exec("TRUNCATE TABLE links")
 }
