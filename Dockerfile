@@ -17,4 +17,4 @@ RUN go build -i cmd/go-url-shortner/main.go
 # Expose port 8080
 EXPOSE 8080
 
-entrypoint ./main
+ENTRYPOINT ./main
