@@ -1,3 +1,25 @@
-<body>
-    <p>Your url is: {{.}}</p>
-</body>
+<html>
+    <header>
+        <title>URL Shortner</title>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    </header>
+
+    <body>
+        <div class="contaiener">
+            <div class="row">
+                <div class="col s3 offset-s3">
+                    <h5>Your short url is:</h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s4 offset-s4">
+                    <h4 class="align-center">
+                        <b>{{.}}</b>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
