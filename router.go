@@ -3,12 +3,12 @@ package urlshortner
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"net/url"
 
 	"github.com/gorilla/mux"
 	"github.com/mauricioklein/go-url-shortner/store"
+	"github.com/mauricioklein/go-url-shortner/templates"
 )
 
 // Router defines the routes definition
@@ -16,14 +16,18 @@ import (
 type Router struct {
 	ls *store.LinkStore
 	rs *store.RedisStore
+	tr *templates.Render
 	mr *mux.Router
 }
 
 func NewRouter(ls *store.LinkStore, rs *store.RedisStore) *mux.Router {
 	mr := mux.NewRouter()
+	tr := templates.NewRender()
+
 	router := Router{
 		ls: ls,
 		rs: rs,
+		tr: tr,
 		mr: mr,
 	}
 
@@ -35,50 +39,37 @@ func NewRouter(ls *store.LinkStore, rs *store.RedisStore) *mux.Router {
 }
 
 func (router *Router) homepage(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("templates/home.html")
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	t.Execute(w, nil)
+	router.tr.Home(w)
 }
 
 func (router *Router) registerURL(w http.ResponseWriter, r *http.Request) {
 	url, err := getUrlFromForm(r)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	// Load template
-	t, err := template.ParseFiles("templates/response.html")
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		router.tr.Error(w)
 		return
 	}
 
 	// check if link already exists on database
 	storedLink, err := router.ls.GetByURL(url)
 	if err == nil {
-		t.Execute(w, buildShortURL(r.Host, storedLink))
+		router.tr.Response(w, buildShortURL(r.Host, storedLink))
 		return
 	}
 
 	// It's a new link, so let's persist it
 	newLink, err := router.ls.PersistURL(url)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		router.tr.Error(w)
 		return
 	}
 
-	t.Execute(w, buildShortURL(r.Host, newLink))
+	router.tr.Response(w, buildShortURL(r.Host, newLink))
 }
 
 func (router *Router) proxyURLCode(w http.ResponseWriter, r *http.Request) {
 	code, exists := mux.Vars(r)["code"]
 	if !exists {
-		w.WriteHeader(http.StatusBadRequest)
+		router.tr.Error(w)
 		return
 	}
 
@@ -95,7 +86,7 @@ func (router *Router) proxyURLCode(w http.ResponseWriter, r *http.Request) {
 	// So, let's query the DB
 	dbLink, err := router.ls.GetByID(id)
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
+		router.tr.NotFound(w, code)
 		return
 	}
 

@@ -58,7 +58,7 @@ func TestRouter_RegisterURL_WithValidURL(t *testing.T) {
 	router.ServeHTTP(w, r)
 
 	assert.Equal(t, w.Code, http.StatusOK)
-	assert.Contains(t, w.Body.String(), "Your url is")
+	assert.Contains(t, w.Body.String(), "Your short url is")
 }
 
 func TestRouter_RegisterURL_WithInvalidURL(t *testing.T) {
@@ -83,10 +83,10 @@ func TestRouter_RegisterURL_WithInvalidURL(t *testing.T) {
 	r.ParseForm()
 	router.ServeHTTP(w, r)
 
-	assert.Equal(t, w.Code, http.StatusBadRequest)
+	assert.Contains(t, w.Body.String(), "Something wrong happened")
 }
 
-func TestRouter_ProxyURLCode(t *testing.T) {
+func TestRouter_ProxyURLCode_WithURLFound(t *testing.T) {
 	linkStore, closeConn, err := createLinkStore()
 	if err != nil {
 		t.Error(err)
@@ -107,6 +107,25 @@ func TestRouter_ProxyURLCode(t *testing.T) {
 
 	assert.Equal(t, w.Code, http.StatusMovedPermanently)
 	assert.Contains(t, w.Body.String(), link.URL)
+}
+
+func TestRouter_ProxyURLCode_WithURLNotFound(t *testing.T) {
+	linkStore, closeConn, err := createLinkStore()
+	if err != nil {
+		t.Error(err)
+	}
+	defer closeConn()
+
+	redisStore, cleanRedis := createRedisStore()
+	defer cleanRedis()
+
+	router := NewRouter(linkStore, redisStore)
+	r, _ := http.NewRequest(http.MethodGet, "/foobar", nil)
+	w := httptest.NewRecorder()
+
+	router.ServeHTTP(w, r)
+
+	assert.Contains(t, w.Body.String(), "The code \"foobar\" wasn't found")
 }
 
 func createLinkStore() (*store.LinkStore, func() error, error) {
