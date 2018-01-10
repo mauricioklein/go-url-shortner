@@ -1,28 +1,58 @@
-<body>
+<html>
     <header>
         <title>URL Shortner</title>
 
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     </header>
 
     <body>
-        <h2>Welcome to the URL shortner</h2>
+        <div class="contaiener">
+            <div class="row">
+                <div class="col s6 offset-s3">
+                    <div class="row">
+                        <h3 class="center-align">Welcome to the URL shortner</h3>
+                    </div>
 
-        <form id="mainForm" action="/" method="post">
-            URL: <input id="url" name="url" type="text"><br/>
-            <input type="submit" value="Create short URL">
-        </form>
+                    <div class="row">
+                        <form id="mainForm" action="/" method="post">
+                            <div class="input-field col s10 offset-s1">
+                                <input id="url" name="url" type="text">
+                                <label for="url">Paste the URL here</label>
+                            </div>
+
+                            <div class="row center-align">
+                                <button id="submitBtn" type="submit" class="btn waves-effect waves-light disabled btn-large">
+                                    Generate
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 
     <script>
-        $('#mainForm').on('submit', function(e){
-            var url = $('#url').val()
+        $('#url').on('input', function(e){
+            var url = $(this).val()
+            var btn = $('#submitBtn')
 
-            try {
-                new URL(url)
-            } catch(_) {
-                e.preventDefault()
+            if (isValidURL(url)) {
+                btn.removeClass('disabled')
+            } else {
+                btn.addClass('disabled')
             }
         })
+        
+        function isValidURL(url) {
+            try {
+                new URL(url)
+                return true
+            } catch (_) {
+                return false
+            }            
+        }
     </script>
-</body>
+</html>
