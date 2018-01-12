@@ -5,9 +5,9 @@ Go URL Shortner is a Golang implementation of a URL shortner.
 ## Technologies
 
 - Go 1.9.2
-- Nginx
-- Postgresql
-- Redis
+- Nginx 1.13
+- Postgresql 10.1
+- Redis 4.0
 
 ## Setup
 
